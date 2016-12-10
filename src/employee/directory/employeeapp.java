@@ -7,6 +7,10 @@ package employee.directory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -19,20 +23,62 @@ public class employeeapp extends javax.swing.JFrame {
      */
     public employeeapp() {
         initComponents();
+        showUsersInTable();
     }
     
     public Connection getConnection(){
        Connection con;
 
        try {
-           con = DriverManager.getConnection("jdbc:derby://localhost:1527/employees", "root","root");
+           con = DriverManager.getConnection("jdbc:derby://localhost:1527/users", "root","root");
            return con;
        } catch (Exception e) {
            e.printStackTrace();
            return null;
        }
-   }
+    }
+    
+    //Populate ArrayList with users from the database and retrun the ArrayList
+    public ArrayList<User> getUsersList(){
+       ArrayList<User> usersList = new ArrayList<User>();
+       Connection connection = getConnection();
+       
+       String query = "SELECT * FROM  users ";
+       Statement st;
+       ResultSet rs;
+       
+       try {
+           st = connection.createStatement();
+           rs = st.executeQuery(query);
 
+           User user;
+
+           while(rs.next()){
+               user = new User(rs.getInt("id"),rs.getString("fname"),rs.getString("lname"),rs.getString("phone"));
+               usersList.add(user);
+           }
+
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+       return usersList;
+    }
+    
+    //Have the data in the JTable
+    public void showUsersInTable(){
+        ArrayList<User> list = getUsersList();
+        DefaultTableModel model = (DefaultTableModel)jTable_Display_Users.getModel();
+        Object[] row = new Object[4];
+        for(int i = 0; i < list.size(); i++){
+           row[0] = list.get(i).getId();
+           row[1] = list.get(i).getFirstName();
+           row[2] = list.get(i).getLastNAme();
+           row[3] = list.get(i).getPhone();
+           
+           model.addRow(row);
+        }
+    }
+            
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -57,7 +103,7 @@ public class employeeapp extends javax.swing.JFrame {
         jButton_Delete = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable_Display = new javax.swing.JTable();
+        jTable_Display_Users = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -150,7 +196,7 @@ public class employeeapp extends javax.swing.JFrame {
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Employee Database");
 
-        jTable_Display.setModel(new javax.swing.table.DefaultTableModel(
+        jTable_Display_Users.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -158,7 +204,7 @@ public class employeeapp extends javax.swing.JFrame {
                 "ID", "First Name", "Last Name", "Phone #"
             }
         ));
-        jScrollPane2.setViewportView(jTable_Display);
+        jScrollPane2.setViewportView(jTable_Display_Users);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -255,7 +301,7 @@ public class employeeapp extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable_Display;
+    private javax.swing.JTable jTable_Display_Users;
     private javax.swing.JTextField jTextField_FirstName;
     private javax.swing.JTextField jTextField_Id;
     private javax.swing.JTextField jTextField_LastName;

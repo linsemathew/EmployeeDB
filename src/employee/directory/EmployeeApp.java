@@ -28,6 +28,7 @@ public class EmployeeApp extends javax.swing.JFrame {
         showUsersInTable();
     }
     
+    //Connect to database
     public Connection getConnection(){
        Connection con;
 
@@ -111,10 +112,12 @@ public class EmployeeApp extends javax.swing.JFrame {
         return usersList;
     }
     
+    //Clear table 
     public void deleteAllRows(){
         DefaultTableModel dtm = (DefaultTableModel) jTable_Display_Users.getModel();
         dtm.setRowCount(0);
     }
+    
     //Have the data in the JTable
     public void showUsersInTable(){
         ArrayList<User> list = getUsersList();
@@ -131,6 +134,7 @@ public class EmployeeApp extends javax.swing.JFrame {
         }
     }
     
+    //Populate table based on search params
      public void findUsers(){
         ArrayList<User> users = getUsersList(jText_Search.getText());
         DefaultTableModel model = (DefaultTableModel)jTable_Display_Users.getModel();
@@ -351,11 +355,11 @@ public class EmployeeApp extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jText_Search)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton_Search, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addGap(12, 12, 12))
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

@@ -82,6 +82,10 @@ public class EmployeeApp extends javax.swing.JFrame {
         }
     }
     
+    public boolean isEmptyFields(){
+        return jTextField_Department.getText().length() == 0 || jTextField_FirstName.getText().length() == 0 || jTextField_LastName.getText().length() == 0 || jTextField_Phone.getText().length() == 0;
+    }
+    
     public void executeSQlQuery(String query, String message){
        Connection con = getConnection();
        Statement st;
@@ -91,9 +95,9 @@ public class EmployeeApp extends javax.swing.JFrame {
                DefaultTableModel model = (DefaultTableModel)jTable_Display_Users.getModel();
                model.setRowCount(0);
                showUsersInTable();
-               JOptionPane.showMessageDialog(null, "Data was "+message+"ed successfully.");
+               JOptionPane.showMessageDialog(null, message+" was successful.");
             } else{
-               JOptionPane.showMessageDialog(null, "Data did not "+message+".");
+               JOptionPane.showMessageDialog(null, message+" wasn't successful.");
             }
         } catch(Exception ex){
            ex.printStackTrace();
@@ -147,6 +151,11 @@ public class EmployeeApp extends javax.swing.JFrame {
         });
 
         jButton_Update.setText("Update");
+        jButton_Update.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_UpdateActionPerformed(evt);
+            }
+        });
 
         jButton_Delete.setText("Delete");
 
@@ -286,13 +295,26 @@ public class EmployeeApp extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable_Display_UsersMouseClicked
 
     private void jButton_InsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_InsertActionPerformed
-        if (jTextField_Department.getText().length() == 0 || jTextField_FirstName.getText().length() == 0 || jTextField_LastName.getText().length() == 0 || jTextField_Phone.getText().length() == 0){
+        if (isEmptyFields()){
             JOptionPane.showMessageDialog(null, "Please fill out all fields.");
         } else {
             String query = "INSERT INTO users(department, fname, lname, phone) VALUES ('"+jTextField_Department.getText()+"','"+jTextField_FirstName.getText()+"','"+jTextField_LastName.getText()+"','"+jTextField_Phone.getText()+"')";
-            executeSQlQuery(query, "insert");
+            executeSQlQuery(query, "Insert");
         }
     }//GEN-LAST:event_jButton_InsertActionPerformed
+
+    private void jButton_UpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_UpdateActionPerformed
+        int i = jTable_Display_Users.getSelectedRow();
+        if (i==-1){
+            JOptionPane.showMessageDialog(null, "Please select a row to update.");
+        } else if (isEmptyFields()){
+            JOptionPane.showMessageDialog(null, "Please fill out all fields.");
+        } else {
+            TableModel model = jTable_Display_Users.getModel();
+            String query = "UPDATE users SET department='"+jTextField_Department.getText()+"',fname='"+jTextField_FirstName.getText()+"',lname='"+jTextField_LastName.getText()+"',phone='"+jTextField_Phone.getText()+"' WHERE id = "+model.getValueAt(i,0).toString();
+            executeSQlQuery(query, "Update"); 
+        }
+    }//GEN-LAST:event_jButton_UpdateActionPerformed
 
     /**
      * @param args the command line arguments

@@ -11,12 +11,14 @@ package employee.directory;
  */
 public class User {
     private int id;
+    private String department;
     private String firstName;
     private String lastName;
     private String phone;
     
-    public User(int ID, String firstName, String lastName, String phone){
+    public User(int ID, String department, String firstName, String lastName, String phone){
         this.id = ID;
+        this.department = department;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
@@ -24,6 +26,10 @@ public class User {
     
     public int getId(){
         return id;
+    }
+    
+    public String getDepartment(){
+        return department;
     }
     
     public String getFirstName(){

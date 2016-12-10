@@ -158,6 +158,11 @@ public class EmployeeApp extends javax.swing.JFrame {
         });
 
         jButton_Delete.setText("Delete");
+        jButton_Delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_DeleteActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Department:");
 
@@ -315,6 +320,17 @@ public class EmployeeApp extends javax.swing.JFrame {
             executeSQlQuery(query, "Update"); 
         }
     }//GEN-LAST:event_jButton_UpdateActionPerformed
+
+    private void jButton_DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteActionPerformed
+        int i = jTable_Display_Users.getSelectedRow();
+        if (i==-1){
+            JOptionPane.showMessageDialog(null, "Please select a row to delete.");
+        } else {
+            TableModel model = jTable_Display_Users.getModel();
+            String query = "DELETE FROM users WHERE id = "+model.getValueAt(i,0).toString();
+            executeSQlQuery(query, "Deleted");
+        }
+    }//GEN-LAST:event_jButton_DeleteActionPerformed
 
     /**
      * @param args the command line arguments

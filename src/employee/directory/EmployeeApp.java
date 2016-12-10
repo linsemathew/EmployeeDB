@@ -40,23 +40,28 @@ public class EmployeeApp extends javax.swing.JFrame {
        }
     }
     
-    //Populate ArrayList with users from the database and retrun the ArrayList
+    //Populate ArrayList with users from the database and return the ArrayList
     public ArrayList<User> getUsersList(){
-       ArrayList<User> usersList = new ArrayList<User>();
-       Connection connection = getConnection();
-       
+       ArrayList<User> usersList = new ArrayList<>();
        String query = "SELECT * FROM  users ";
        Statement st;
        ResultSet rs;
        
        try {
+           Connection connection = getConnection();
            st = connection.createStatement();
            rs = st.executeQuery(query);
 
            User user;
 
            while(rs.next()){
-               user = new User(rs.getInt("id"),rs.getString("department"),rs.getString("fname"),rs.getString("lname"),rs.getString("phone"));
+               user = new User(
+                    rs.getInt("id"),
+                    rs.getString("department"),
+                    rs.getString("fname"),
+                    rs.getString("lname"),
+                    rs.getString("phone")
+               );
                usersList.add(user);
            }
 
@@ -66,6 +71,50 @@ public class EmployeeApp extends javax.swing.JFrame {
        return usersList;
     }
     
+    //Populate ArrayList with users that match search
+    public ArrayList<User> getUsersList(String valToSearch){
+        ArrayList<User> usersList = new ArrayList<>();
+        Statement st;
+        ResultSet rs;
+        
+        try{
+            Connection con = getConnection();
+            st = con.createStatement();
+            String searchQuery = 
+                    "SELECT * FROM users WHERE UPPER(department) LIKE UPPER('%"+valToSearch+"%')"
+                    + " union " +
+                    "SELECT * FROM users WHERE UPPER(fname) LIKE UPPER('%"+valToSearch+"%')"
+                    + " union " +
+                    "SELECT * FROM users WHERE UPPER(lname) LIKE UPPER('%"+valToSearch+"%')"
+                    + " union " +
+                    "SELECT * FROM users WHERE UPPER(phone) LIKE UPPER('%"+valToSearch+"%')";
+            
+            rs = st.executeQuery(searchQuery);
+            
+            User user;
+            
+            while(rs.next()){
+                user = new User(
+                    rs.getInt("id"),
+                    rs.getString("department"),
+                    rs.getString("fname"),
+                    rs.getString("lname"),
+                    rs.getString("phone")
+               );
+                usersList.add(user);
+            }
+            
+        } catch(Exception ex){
+            System.out.println(ex.getMessage());
+        }
+        
+        return usersList;
+    }
+    
+    public void deleteAllRows(){
+        DefaultTableModel dtm = (DefaultTableModel) jTable_Display_Users.getModel();
+        dtm.setRowCount(0);
+    }
     //Have the data in the JTable
     public void showUsersInTable(){
         ArrayList<User> list = getUsersList();
@@ -75,13 +124,28 @@ public class EmployeeApp extends javax.swing.JFrame {
            row[0] = list.get(i).getId();
            row[1] = list.get(i).getDepartment();
            row[2] = list.get(i).getFirstName();
-           row[3] = list.get(i).getLastNAme();
+           row[3] = list.get(i).getLastName();
            row[4] = list.get(i).getPhone();
            
            model.addRow(row);
         }
     }
     
+     public void findUsers(){
+        ArrayList<User> users = getUsersList(jText_Search.getText());
+        DefaultTableModel model = (DefaultTableModel)jTable_Display_Users.getModel();
+        Object[] row = new Object[5];
+        for(int i = 0; i < users.size(); i++){
+            row[0] = users.get(i).getId();
+            row[1] = users.get(i).getDepartment();
+            row[2] = users.get(i).getFirstName();
+            row[3] = users.get(i).getLastName();
+            row[4] = users.get(i).getPhone();
+            model.addRow(row);
+        }
+    }
+    
+    //Check if fields are empty
     public boolean isEmptyFields(){
         return jTextField_Department.getText().length() == 0 || jTextField_FirstName.getText().length() == 0 || jTextField_LastName.getText().length() == 0 || jTextField_Phone.getText().length() == 0;
     }
@@ -129,6 +193,10 @@ public class EmployeeApp extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable_Display_Users = new javax.swing.JTable();
+        jPanel3 = new javax.swing.JPanel();
+        jText_Search = new javax.swing.JTextField();
+        jButton_Search = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -171,27 +239,37 @@ public class EmployeeApp extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(9, 9, 9)
-                .addComponent(jButton_Insert)
-                .addGap(18, 18, 18)
-                .addComponent(jButton_Update)
-                .addGap(18, 18, 18)
-                .addComponent(jButton_Delete)
-                .addGap(0, 24, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel4))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jTextField_FirstName))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField_Department)))
+                        .addGap(12, 12, 12))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField_Phone)
+                            .addComponent(jTextField_LastName))
+                        .addGap(14, 14, 14)))
+                .addGap(18, 18, 18))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addComponent(jButton_Insert, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton_Update, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField_FirstName)
-                    .addComponent(jTextField_LastName)
-                    .addComponent(jTextField_Department)
-                    .addComponent(jTextField_Phone))
-                .addContainerGap())
+                .addComponent(jButton_Delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(46, 46, 46))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -201,7 +279,7 @@ public class EmployeeApp extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jTextField_Department, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jTextField_FirstName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
@@ -212,27 +290,27 @@ public class EmployeeApp extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(jTextField_Phone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_Insert)
                     .addComponent(jButton_Update)
                     .addComponent(jButton_Delete))
-                .addGap(243, 243, 243))
+                .addGap(176, 176, 176))
         );
 
         jLabel5.setBackground(new java.awt.Color(51, 0, 51));
-        jLabel5.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Lucida Grande", 0, 32)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Employee Database");
 
-        jTable_Display_Users.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jTable_Display_Users.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         jTable_Display_Users.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID", "Department", "First Name", "Last Name", "Phone #"
+                "Id", "Department", "First Name", "Last Name", "Phone #"
             }
         ));
         jTable_Display_Users.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -246,28 +324,76 @@ public class EmployeeApp extends javax.swing.JFrame {
             jTable_Display_Users.getColumnModel().getColumn(3).setResizable(false);
         }
 
+        jText_Search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jText_SearchActionPerformed(evt);
+            }
+        });
+
+        jButton_Search.setText("Search");
+        jButton_Search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_SearchActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Show All");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jText_Search)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton_Search, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addGap(12, 12, 12))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton_Search)
+                    .addComponent(jText_Search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(21, 21, 21)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE))
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
+                .addGap(26, 26, 26)
+                .addComponent(jLabel5)
+                .addGap(21, 21, 21)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -328,9 +454,27 @@ public class EmployeeApp extends javax.swing.JFrame {
         } else {
             TableModel model = jTable_Display_Users.getModel();
             String query = "DELETE FROM users WHERE id = "+model.getValueAt(i,0).toString();
-            executeSQlQuery(query, "Deleted");
+            executeSQlQuery(query, "Delete");
         }
     }//GEN-LAST:event_jButton_DeleteActionPerformed
+
+    private void jButton_SearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_SearchActionPerformed
+        if (jText_Search.getText().length() == 0){
+            JOptionPane.showMessageDialog(null, "Please enter a search first.");
+        } else {
+            deleteAllRows();
+            findUsers();
+        }
+    }//GEN-LAST:event_jButton_SearchActionPerformed
+
+    private void jText_SearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jText_SearchActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jText_SearchActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        deleteAllRows();
+        showUsersInTable();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -371,8 +515,10 @@ public class EmployeeApp extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton_Delete;
     private javax.swing.JButton jButton_Insert;
+    private javax.swing.JButton jButton_Search;
     private javax.swing.JButton jButton_Update;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -381,11 +527,13 @@ public class EmployeeApp extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable_Display_Users;
     private javax.swing.JTextField jTextField_Department;
     private javax.swing.JTextField jTextField_FirstName;
     private javax.swing.JTextField jTextField_LastName;
     private javax.swing.JTextField jTextField_Phone;
+    private javax.swing.JTextField jText_Search;
     // End of variables declaration//GEN-END:variables
 }

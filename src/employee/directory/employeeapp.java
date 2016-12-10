@@ -10,7 +10,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -76,6 +78,24 @@ public class employeeapp extends javax.swing.JFrame {
            row[3] = list.get(i).getPhone();
            
            model.addRow(row);
+        }
+    }
+    
+    public void executeSQlQuery(String query, String message){
+       Connection con = getConnection();
+       Statement st;
+       try{
+           st = con.createStatement();
+           if((st.executeUpdate(query)) == 1){
+               DefaultTableModel model = (DefaultTableModel)jTable_Display_Users.getModel();
+               model.setRowCount(0);
+               showUsersInTable();
+               JOptionPane.showMessageDialog(null, "Data was"+message+"d successfully.");
+            } else{
+               JOptionPane.showMessageDialog(null, "Data did not "+message+".");
+            }
+        } catch(Exception ex){
+           ex.printStackTrace();
         }
     }
             
@@ -204,6 +224,11 @@ public class employeeapp extends javax.swing.JFrame {
                 "ID", "First Name", "Last Name", "Phone #"
             }
         ));
+        jTable_Display_Users.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable_Display_UsersMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTable_Display_Users);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -253,6 +278,17 @@ public class employeeapp extends javax.swing.JFrame {
     private void jTextField_IdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_IdActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField_IdActionPerformed
+
+    private void jTable_Display_UsersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_Display_UsersMouseClicked
+        //Index of row
+        int i = jTable_Display_Users.getSelectedRow();
+        TableModel model = jTable_Display_Users.getModel();
+        //Show string in form
+        jTextField_Id.setText(model.getValueAt(i,0).toString());
+        jTextField_FirstName.setText(model.getValueAt(i,1).toString());
+        jTextField_LastName.setText(model.getValueAt(i,2).toString());
+        jTextField_Phone.setText(model.getValueAt(i,3).toString());
+    }//GEN-LAST:event_jTable_Display_UsersMouseClicked
 
     /**
      * @param args the command line arguments

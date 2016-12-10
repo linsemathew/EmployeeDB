@@ -32,7 +32,7 @@ public class employeeapp extends javax.swing.JFrame {
        Connection con;
 
        try {
-           con = DriverManager.getConnection("jdbc:derby://localhost:1527/users", "root","root");
+           con = DriverManager.getConnection("jdbc:derby://localhost:1527/employees", "root","root");
            return con;
        } catch (Exception e) {
            e.printStackTrace();
@@ -90,7 +90,7 @@ public class employeeapp extends javax.swing.JFrame {
                DefaultTableModel model = (DefaultTableModel)jTable_Display_Users.getModel();
                model.setRowCount(0);
                showUsersInTable();
-               JOptionPane.showMessageDialog(null, "Data was"+message+"d successfully.");
+               JOptionPane.showMessageDialog(null, "Data was "+message+"ed successfully.");
             } else{
                JOptionPane.showMessageDialog(null, "Data did not "+message+".");
             }
@@ -110,11 +110,9 @@ public class employeeapp extends javax.swing.JFrame {
 
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField_Id = new javax.swing.JTextField();
         jTextField_FirstName = new javax.swing.JTextField();
         jTextField_LastName = new javax.swing.JTextField();
         jTextField_Phone = new javax.swing.JTextField();
@@ -130,21 +128,18 @@ public class employeeapp extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel1.setText("ID: ");
-
         jLabel2.setText("First Name:");
 
         jLabel3.setText("Last Name:");
 
         jLabel4.setText("Phone #:");
 
-        jTextField_Id.addActionListener(new java.awt.event.ActionListener() {
+        jButton_Insert.setText("Add");
+        jButton_Insert.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField_IdActionPerformed(evt);
+                jButton_InsertActionPerformed(evt);
             }
         });
-
-        jButton_Insert.setText("Add");
 
         jButton_Update.setText("Update");
 
@@ -158,13 +153,9 @@ public class employeeapp extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel1))
+                        .addComponent(jLabel2)
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField_FirstName)
-                            .addComponent(jTextField_Id)))
+                        .addComponent(jTextField_FirstName))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)
@@ -186,11 +177,7 @@ public class employeeapp extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(23, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jTextField_Id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jTextField_FirstName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -248,11 +235,11 @@ public class employeeapp extends javax.swing.JFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
+                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -275,20 +262,22 @@ public class employeeapp extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField_IdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_IdActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField_IdActionPerformed
-
     private void jTable_Display_UsersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_Display_UsersMouseClicked
         //Index of row
         int i = jTable_Display_Users.getSelectedRow();
         TableModel model = jTable_Display_Users.getModel();
         //Show string in form
-        jTextField_Id.setText(model.getValueAt(i,0).toString());
         jTextField_FirstName.setText(model.getValueAt(i,1).toString());
         jTextField_LastName.setText(model.getValueAt(i,2).toString());
         jTextField_Phone.setText(model.getValueAt(i,3).toString());
     }//GEN-LAST:event_jTable_Display_UsersMouseClicked
+
+    private void jButton_InsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_InsertActionPerformed
+
+        String query = "INSERT INTO users(fname, lname, phone) VALUES ('"+jTextField_FirstName.getText()+"','"+jTextField_LastName.getText()+"','"+jTextField_Phone.getText()+"')";
+        
+        executeSQlQuery(query, "insert");
+    }//GEN-LAST:event_jButton_InsertActionPerformed
 
     /**
      * @param args the command line arguments
@@ -329,7 +318,6 @@ public class employeeapp extends javax.swing.JFrame {
     private javax.swing.JButton jButton_Delete;
     private javax.swing.JButton jButton_Insert;
     private javax.swing.JButton jButton_Update;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -339,7 +327,6 @@ public class employeeapp extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable_Display_Users;
     private javax.swing.JTextField jTextField_FirstName;
-    private javax.swing.JTextField jTextField_Id;
     private javax.swing.JTextField jTextField_LastName;
     private javax.swing.JTextField jTextField_Phone;
     // End of variables declaration//GEN-END:variables
